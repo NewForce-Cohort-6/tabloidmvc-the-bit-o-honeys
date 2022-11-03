@@ -29,6 +29,9 @@
                         <i class="fas fa-tag"></i>
                     </a>
                 }
+                <a asp-action="Create" asp-route-id="@Model.Post.Id" asp-controller="Comment" class="btn btn-outline-primary mx-1" title="Add Comment">
+                    <i class="fas fa-plus"></i>
+                </a>
                 @if (Model.Post.Comments.Count != 0)
                 {
                     <a asp-action="Index" asp-route-id="@Model.Post.Id" asp-controller="Comment" class="btn btn-outline-primary mx-1" title="View Comments">
