@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using TabloidMVC.Models;
 using TabloidMVC.Repositories;
 
@@ -30,25 +32,34 @@ namespace TabloidMVC.Controllers
             return View();
         }
 
-        // GET: CommentController/Create
-        public ActionResult Create()
+        public ActionResult Create(int id)
         {
             return View();
         }
-
         // POST: CommentController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(int id, Comment comment)
         {
             try
             {
+                comment.CreateDateTime = DateTime.Now;
+                comment.PostId = id;
+                comment.UserProfileId = GetCurrentUserId();
+                _commentRepo.AddComment(comment);
+                
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch(Exception ex)
             {
-                return View();
+                return View(comment);
             }
+        }
+
+        private int GetCurrentUserId()
+        {
+            string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return int.Parse(id);
         }
 
         // GET: CommentController/Edit/5

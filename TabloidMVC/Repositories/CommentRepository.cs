@@ -57,6 +57,34 @@ namespace TabloidMVC.Repositories
             return comment;
         }
 
+        public void AddComment(Comment comment)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                    INSERT INTO Comment(
+                    PostId, UserProfileId, 
+                    Subject, Content,
+                    CreateDateTime )
+                    OUTPUT INSERTED.ID
+                    VALUES (
+                    @PostId, @UserProfileId,
+                    @Subject, @Content,
+                    @CreateDateTime )";
+                    cmd.Parameters.AddWithValue("@PostId", comment.PostId);
+                    cmd.Parameters.AddWithValue("@UserProfileId", comment.UserProfileId);
+                    cmd.Parameters.AddWithValue("@Subject", comment.Subject);
+                    cmd.Parameters.AddWithValue("@Content", comment.Content);
+                    cmd.Parameters.AddWithValue("@CreateDateTime", comment.CreateDateTime);
+
+                    comment.Id = (int)cmd.ExecuteScalar();
+                }
+            }
+        }
+
         public Comment GetCommentById(int id)
         {
             using (var conn = Connection)
